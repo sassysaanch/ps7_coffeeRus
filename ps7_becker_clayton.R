@@ -175,9 +175,71 @@ for (i in files) {
       }}}}
 
 ## -----------------------------------------------------------------------------
-## Part 2 - Label each question using comments
+## Part 3 - Label each question using comments
 ## -----------------------------------------------------------------------------
 
+# Question 1
+
+1. In this section, you will create a function for saving plots to your `plots_dir`. 
+The plot will be the same as the one from Part IV of problem set 6. You can copy your code from there 
+and adapt it to work inside your function:
+  
+  - **Function name**: `save_plot()`
+- **Function argument**: `file_name` (the name of the file you are reading in)
+- **Function body**: Read in the CSV data from your `csv_dir` file path directory. The data file would 
+be your `file_name` input plus the `.csv` extension. Your function should perform the same data manipulations 
+you did in Part IV of problem set 6 to generate the `nums` vector containing sums for `HBCU`, `TRIBAL`, and `HOSPITAL`. 
+Remember to create the `nums` vector using the vector() function outside of the loop similar to Part IV question 5. 
+Lastly, paste the following code inside your function body to save the plot:
+
+df <- vector()
+nums <- vector()
+file_name <- str_c(csv_dir, files, ".csv")
+
+save_plot <- function(file_name) {
+  df <- read.csv(file = file.path(file_name))
+  df_subset <- df %>% 
+  mutate(
+    HBCU = if_else(HBCU == 1, 1, 0),
+    TRIBAL = if_else(TRIBAL == 1, 1, 0),
+    HOSPITAL = if_else(HOSPITAL == 1, 1, 0)) %>% select(HBCU, TRIBAL, HOSPITAL)
+  for (i in 1:length(df_subset)) {
+    nums[[i]] <- str_c(sum(df_subset[[i]]))
+  }
+  for (i in files) {
+  png(file.path(plots_dir, str_c(files, '.png')))
+  print(ggplot(data.frame(nums), aes(seq_along(nums), nums)) +
+          geom_bar(stat = 'identity') +
+          scale_x_continuous(breaks = seq_along(df_subset), labels = names(df_subset)) +
+          xlab(NULL) + ylab(NULL))
+  dev.off() }
+}
+
+# Question 2 
+
+for (i in file_name) {
+  files_save <- str_c(i)
+  save_plot(file_name = files_save)
+}
+
+
+df <- read.csv(file = file.path(file_name[1]))
+df_subset <- df %>% 
+  mutate(
+    HBCU = if_else(HBCU == 1, 1, 0),
+    TRIBAL = if_else(TRIBAL == 1, 1, 0),
+    HOSPITAL = if_else(HOSPITAL == 1, 1, 0)) %>% select(HBCU, TRIBAL, HOSPITAL)
+
+for (i in 1:length(df_subset)) {
+  nums[[i]] <- str_c(sum(df_subset[[i]]))
+}
+
+png(file.path(plots_dir, str_c(files, '.png')))
+print(ggplot(data.frame(nums), aes(seq_along(nums), nums)) +
+        geom_bar(stat = 'identity') +
+        scale_x_continuous(breaks = seq_along(df_subset), labels = names(df_subset)) +
+        xlab(NULL) + ylab(NULL))
+dev.off() 
 ## -----------------------------------------------------------------------------
 ## END SCRIPT
 ## -----------------------------------------------------------------------------
