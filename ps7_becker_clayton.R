@@ -192,12 +192,10 @@ you did in Part IV of problem set 6 to generate the `nums` vector containing sum
 Remember to create the `nums` vector using the vector() function outside of the loop similar to Part IV question 5. 
 Lastly, paste the following code inside your function body to save the plot:
 
-df <- vector()
 nums <- vector()
-file_name <- str_c(csv_dir, files, ".csv")
 
-save_plot <- function(file_name) {
-  df <- read.csv(file = file.path(file_name))
+save_plot <- function(files) {
+  df <- read.csv(file = file.path(csv_dir, str_c(files, ".csv")))
   df_subset <- df %>% 
   mutate(
     HBCU = if_else(HBCU == 1, 1, 0),
@@ -206,40 +204,21 @@ save_plot <- function(file_name) {
   for (i in 1:length(df_subset)) {
     nums[[i]] <- str_c(sum(df_subset[[i]]))
   }
-  for (i in files) {
   png(file.path(plots_dir, str_c(files, '.png')))
   print(ggplot(data.frame(nums), aes(seq_along(nums), nums)) +
           geom_bar(stat = 'identity') +
           scale_x_continuous(breaks = seq_along(df_subset), labels = names(df_subset)) +
           xlab(NULL) + ylab(NULL))
   dev.off() }
-}
 
 # Question 2 
 
-for (i in file_name) {
+for (i in files) {
   files_save <- str_c(i)
-  save_plot(file_name = files_save)
+  save_plot(files = files_save)
 }
 
 
-df <- read.csv(file = file.path(file_name[1]))
-df_subset <- df %>% 
-  mutate(
-    HBCU = if_else(HBCU == 1, 1, 0),
-    TRIBAL = if_else(TRIBAL == 1, 1, 0),
-    HOSPITAL = if_else(HOSPITAL == 1, 1, 0)) %>% select(HBCU, TRIBAL, HOSPITAL)
-
-for (i in 1:length(df_subset)) {
-  nums[[i]] <- str_c(sum(df_subset[[i]]))
-}
-
-png(file.path(plots_dir, str_c(files, '.png')))
-print(ggplot(data.frame(nums), aes(seq_along(nums), nums)) +
-        geom_bar(stat = 'identity') +
-        scale_x_continuous(breaks = seq_along(df_subset), labels = names(df_subset)) +
-        xlab(NULL) + ylab(NULL))
-dev.off() 
 ## -----------------------------------------------------------------------------
 ## END SCRIPT
 ## -----------------------------------------------------------------------------
