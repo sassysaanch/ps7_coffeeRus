@@ -152,27 +152,13 @@ download_file(files = files[1],
 
 # Question 8
 
-8. Finally, use loops to batch download all of the IPEDS files. These will be nested loops, 
-similar to Part II of problem set 6. You'll want to loop over each year's data, then loop over each 
-type of data to call `download_file()` for each data type. There are multiple ways to do this.
-
-prior to running this code, you may want to delete files you downloaded or unzipped while 
-answering previous questions; and good to experiment with how function call differs when you 
-"Already have files" vs. not
-
-for (i in files) {
-  files_loop <- str_c(i)
-  for (o in file_dirs) {
-    dirs_loop <- str_c(o)
-    for (p in suffixes) {
-      suffix_loop <-  str_c(p)
-      for (a in extensions) {
-        extension_loop <- str_c(a)
-        download_file(files = files_loop, 
-                      file_dirs = dirs_loop, 
-                      suffixes = suffix_loop, 
-                      extensions = extension_loop)
-      }}}}
+for (i in 1:length(files)) {
+  for (j in 1:length(file_dirs)) {
+        download_file(files = files[i], 
+                      file_dirs = file_dirs[j], 
+                      suffixes = suffixes[j], 
+                      extensions = extensions[j])
+    }}
 
 ## -----------------------------------------------------------------------------
 ## Part 3 - Label each question using comments
@@ -217,6 +203,9 @@ for (i in files) {
   files_save <- str_c(i)
   save_plot(files = files_save)
 }
+
+
+### Bonus Plot###
 
 
 ## -----------------------------------------------------------------------------
