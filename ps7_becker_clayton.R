@@ -166,18 +166,6 @@ for (i in 1:length(files)) {
 
 # Question 1
 
-1. In this section, you will create a function for saving plots to your `plots_dir`. 
-The plot will be the same as the one from Part IV of problem set 6. You can copy your code from there 
-and adapt it to work inside your function:
-  
-  - **Function name**: `save_plot()`
-- **Function argument**: `file_name` (the name of the file you are reading in)
-- **Function body**: Read in the CSV data from your `csv_dir` file path directory. The data file would 
-be your `file_name` input plus the `.csv` extension. Your function should perform the same data manipulations 
-you did in Part IV of problem set 6 to generate the `nums` vector containing sums for `HBCU`, `TRIBAL`, and `HOSPITAL`. 
-Remember to create the `nums` vector using the vector() function outside of the loop similar to Part IV question 5. 
-Lastly, paste the following code inside your function body to save the plot:
-
 nums <- vector()
 
 save_plot <- function(files) {
@@ -205,8 +193,40 @@ for (i in files) {
 }
 
 
-### Bonus Plot###
+### Bonus Plot ###
 
+plot_subset <- df %>% mutate(
+  location = case_when(LOCALE == "11" ~ "City, L", 
+                       LOCALE == "12" ~ "City, M",
+                       LOCALE == "13" ~ "City, S",
+                       LOCALE == "21" ~ "Suburb, L", 
+                       LOCALE == "22" ~ "Suburb, M", 
+                       LOCALE == "23" ~ "Suburb, S",
+                       LOCALE == "31" ~ "Town, Fringe", 
+                       LOCALE == "32" ~ "Town, Distant",
+                       LOCALE == "33" ~ "Town, Remote", 
+                       LOCALE == "41" ~ "Rural, Fringe",
+                       LOCALE == "42" ~ "Rural, Distant",
+                       LOCALE == "43" ~ "Rural, Remote"),
+  medical = MEDICAL
+) %>% select(location, medical, INSTNM) %>% drop_na() %>% filter(medical == 1)
+
+
+png(file.path(plots_dir, "becker_bonus_plot.png"), width = 600, height = 600, units = "px")
+plot_subset %>% group_by(location) %>%
+  summarise(medical = sum(medical)) %>% 
+  ggplot(mapping = aes(x = location, y = medical)) +
+  geom_col() +
+    geom_text(aes(label = sum(medical), vjust = -0.5)) +
+  ylab("Medical Degree Offered") + xlab("School Location") + 
+  labs(title = "Number of Institutions Offering a Medical Degree by Geography", 
+       caption = "Based on NCES IPEDS data for 2017") +
+  scale_x_discrete() +
+  theme_minimal()
+dev.off()
+
+# I am still unable to get these column numbers to be the number in the column rather than 
+# the total sum of the number of observations in the data frame. I will one day figure this out
 
 ## -----------------------------------------------------------------------------
 ## END SCRIPT
