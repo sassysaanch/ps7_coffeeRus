@@ -217,13 +217,16 @@ plot_subset %>% group_by(location) %>%
   summarise(medical = sum(medical)) %>% 
   ggplot(mapping = aes(x = location, y = medical)) +
   geom_col() +
-    geom_text(aes(label = sum(medical), vjust = -0.5)) +
+    geom_text(aes(label = medical, vjust = -0.5)) +
   ylab("Medical Degree Offered") + xlab("School Location") + 
   labs(title = "Number of Institutions Offering a Medical Degree by Geography", 
        caption = "Based on NCES IPEDS data for 2017") +
   scale_x_discrete() +
   theme_minimal()
 dev.off()
+
+plot_subset %>% group_by(location) %>%
+  summarise(medical = sum(medical))
 
 # I am still unable to get these column numbers to be the number in the column rather than 
 # the total sum of the number of observations in the data frame. I will one day figure this out
