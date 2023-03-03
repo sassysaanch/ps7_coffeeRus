@@ -1,9 +1,9 @@
 ################################################################################
 ##
-## [ PROJ ] < Problem set # >
-## [ FILE ] < Name of this particular file >
-## [ AUTH ] < Your name / GitHub handle >
-## [ INIT ] < Date you started the file >
+## [ PROJ ] < Problem set #7 >
+## [ FILE ] < p7_Cousins_SarahJ >
+## [ AUTH ] < Sarah J. Cousins/SJC0usions >
+## [ INIT ] < Due 3/3/23 >
 ##
 ################################################################################
 
@@ -268,7 +268,11 @@ git checkout main
 git pull
 git merge dev
 git push --set-upstream dev_Cousins_SarahJ main
-
+#sending up revised r script which was missing my name while on main branch
+git pull
+git add ps7_Cousins_SarahJ.R
+git commit -m "r script copy edits"
+git push
 
 ## -----------------------------------------------------------------------------
 ## END SCRIPT
