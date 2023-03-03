@@ -270,7 +270,7 @@ git merge dev
 git push --set-upstream dev_Cousins_SarahJ main
 #sending up revised r script which was missing my name while on main branch
 git pull
-git add ps7_Cousins_SarahJ.R
+git add p7_Cousins_SarahJ.R
 git commit -m "r script copy edits"
 git push
 
