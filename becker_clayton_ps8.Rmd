@@ -1,0 +1,311 @@
+---
+title: "Problem Set #8"
+author: "Clayton Becker"
+date: "March 4th, 2023"
+urlcolor: blue
+output: 
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r, echo=FALSE, include=FALSE}
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>", highlight = TRUE, warning = FALSE, message = FALSE, eval= FALSE)
+```
+
+\textcolor{red}{\textbf{Grade: /38}}
+
+# Overview:
+
+As this is the last week of the programming unit, in this problem set you will continue working with functions which allow you to "automate" tasks that you perform more than once. You will be manipulating data in a descriptive table without using functions, then you will create a descriptive table by using functions, and lastly you will be creating pipeable functions which (like tidyverse functions) can be combined together. In this problem set, you will continue to work with data from the [Integrated Postsecondary Education Data System](https://nces.ed.gov/ipeds/datacenter/DataFiles.aspx?goToReportId=7) (IPEDS). Instead of creating a new repository this week, you will be using the same one from last week, which should contain the HD data files you and your teammates downloaded. Additionally, you'll be downloading the EF data files from IPEDS and merging them with the HD datasets to create descriptive tables and plots.
+
+Like the past couple weeks, the only requirements for this problem set are:
+
+- You must create a separate branch (e.g., `dev_ozan_jaquette_ps8`, `dev_oj_ps8`) to do your work on
+- You will turn in your files on the `main` branch (see final section), meaning you will need to merge in your work from `dev`
+
+
+## Part I: Setting up & downloading data
+
+\textcolor{red}{\textbf{/1}}
+
+1. In your **RStudio**, open the same **RStudio Project** you were using for last week's problem set. In your **RStudio Terminal**, switch to the `main` branch (if you're not there already) and make sure you are up-to-date with the remote repository by pulling changes. Then, create a new branch with your name or initials plus problem set number (e.g., `dev_ozan_jaquette_ps8`, `dev_oj_ps8`) and use that branch to do all your work on.
+
+    Add this `.Rmd` file to your project directory and rename it as `ps8_lastname_firstname.Rmd` (fill in your name).
+
+\textcolor{red}{\textbf{/2}}
+
+2. Download the **Problem set R script template** available under the **Syllabus & Resources** section of the [class website](https://anyone-can-cook.github.io/rclass2/) (or click [here](https://anyone-can-cook.github.io/rclass2/assets/resources/ps_template.R)). Rename the downloaded `ps_template.R` to `ps8_lastname_firstname.R` (fill in your name) and save it inside your project directory.
+
+    Open the R script and fill out your information in the header on top. Under the **libraries** section, load the `tidyverse` library. Under the **directory paths** section, create the same directory path objects from the last problem set: `plots_dir`, `data_dir`, `csv_dir`, `dict_dir`, `stata_dir`
+
+\textcolor{red}{\textbf{/1}}
+
+3. In the main body of your script, copy your `download_file()` function from Part II, Q6 of problem set 7. If you were using the `url` object (provided in Part II, Q1 of problem set 7) inside your function, make sure to replace it with the string `'https://nces.ed.gov/ipeds/datacenter/data/'`.
+
+\textcolor{red}{\textbf{/1}}
+
+4. Like last week, each member of your group will be working with data from different years. Decide which 2 years each group member will be working with from the table below. We will refer to the years as `year_1` and `year_2` throughout this problem set.
+
+| group_member | year_1 | year_2 |
+| :----: | :----: | :----: |
+| 1 | 2019 | 2018 |
+| 2 | 2017 | 2016 |
+| 3 | 2015 | 2014 |
+| 4 | 2013 | 2012 |
+
+Add a comment to your script indicating the years you've chosen. Take a look inside your `csv_dir` to see if the HD CSV files exist for both your years (don't worry about the dictionary or Stata files). If the files are missing (e.g., nobody in your group chose those years last week, or if you have 2012 which was not an option last week), call your `download_file()` function to download the HD CSV data. For example:
+
+```r
+download_file(dir_name = csv_dir, file_name = 'hd2012', file_suffix = '', file_extension = '.csv')
+```
+
+\textcolor{red}{\textbf{/1}}
+
+5. Now, we will start downloading EF data files. The names of these files look like `efXXXXa` where `XXXX` is the year (e.g., `ef2019a`). Call `download_file()` to download:
+
+Note: If you download two .csv files, choose the one that ends in 'rv'. 
+
+    - CSV data for `year_1`
+    - Data dictionary for `year_1`
+    
+    Make sure to download the files into the correct directories. Make sure you are using the right file extensions (e.g. .csv, .xlsx) Feel free to take a look at the data dictionary to learn more about the variables you will be working with.
+
+\textcolor{red}{\textbf{/2}}
+
+6. Let's say we want to primarily download CSV data files (as opposed to the dictionaries or Stata files). It would be useful if downloading CSV files is the default option for our function.
+
+    For this question, copy your `download_file()` function from Part II, Q6 and change the function name to `download_data()`. Modify the arguments `file_suffix` and `file_extension` to take **default values** for downloading CSV file types. If you were using the `url` object (provided in Part II, Q1 of problem set 7) inside your function, make sure to replace it with the string `'https://nces.ed.gov/ipeds/datacenter/data/'`.
+    
+\textcolor{red}{\textbf{/1}}
+
+7. Now you will try downloading the EF CSV data for `year_2` by **only** providing the `dir_name` and `file_name` arguments to the following functions:
+
+    - `download_file()` (you should get an error because you did not provide `file_suffix` and `file_extension`)
+    - `download_data()` (this should successfully download the CSV data because of the default values for the `file_suffix` and `file_extension` arguments)
+
+
+## Part II: Creating descriptive table outside function
+
+\textcolor{red}{\textbf{/1}}
+
+1. In this section, you will be performing some data manipulations to create a descriptive table without using any functions. In the next section, you will factor your code into functions. First, load in the CSV data for `year_1` and save to the following objects:
+
+    - Save HD data to object called `hd_full_df`. Then, change column names to all lowercase.
+    - Save EF data to object called `ef_full_df`. Then, change column names to all lowercase.
+    
+    _Hint_: You can access (and modify) the dataframe column names using `names()`. Use a `stringr` function to turn the names to all lowercase, then assign it back to the column names.
+
+\textcolor{red}{\textbf{/0.5}}
+
+2. Create a new object `hd_df` from `hd_full_df` by performing the following data manipulation:
+
+    - Select only the `unitid` and `stabbr` variables
+
+\textcolor{red}{\textbf{/0.5}}
+
+3. Create a new object `ef_df` from `ef_full_df` by performing the following data manipulations:
+
+    - Filter only rows where the value of `line` is equal to `1` (i.e., filtering for only full-time, first-time, first-year, degree-seeking undergraduates)
+    - Select the following variables: `unitid, eftotlt, efwhitt, efbkaat, efhispt, efasiat, efaiant, efnhpit, ef2mort, efunknt, efnralt`
+
+\textcolor{red}{\textbf{/3}}
+
+4. Take a look at your `ef_df` dataframe. It contains the counts of students by race/ethnicity group for each institution, with `eftotlt` being the total number of students. You will now create percent variables for each race/ethnicity group by dividing the count for each race by the total number of students and multiplying by `100`. Perform the following data manipulations and make sure to assign back to `ef_df` to retain the changes:
+
+    - Create the following percent variables:
+        - `pct_white`: Percent White students, using `efwhitt` variable
+        - `pct_black`: Percent Black or African American students, using `efbkaat` variable
+        - `pct_latinx`: Percent Hispanic or Latinx students, using `efhispt` variable
+        - `pct_asian`: Percent Asian students, using `efasiat` variable
+        - `pct_amerindian`: Percent American Indian or Alaska Native students, using `efaiant` variable
+        - `pct_nativehawaii`: Percent Native Hawaiian or Other Pacific Islanders students, using `efnhpit` variable
+        - `pct_tworaces`: Percent students of two or more races, using `ef2mort` variable
+        - `pct_unknownrace`: Percent students of unknown race, using `efunknt` variable
+        - `pct_nonres`: Percent Nonresident/International students, using `efnralt` variable
+    - Select only the `unitid` variable and the percent variables you created
+
+\textcolor{red}{\textbf{/2}}
+
+5. You'll now merge the HD and EF dataframes by the `unitid` variable. You'll only want to keep rows where `unitid` exists in both dataframes. Think about what type of join you would perform. Then, create a new object `merged_df` by performing the following data manipulations:
+
+    - Join `hd_df` and `ef_df`
+    - Drop the `unitid` variable
+
+\textcolor{red}{\textbf{/2}}
+
+6. Finally, you will create a descriptive table called `race_by_state` from `merged_df` by performing the following data manipulations:
+
+    - Group by `stabbr`
+    - Create the following aggregate variables (hint: don't forget to set na.rm = T when calculating the mean):
+        - `avg_pct_white`: Mean `pct_white` per state
+        - `avg_pct_black`: Mean `pct_black` per state
+        - `avg_pct_latinx`: Mean `pct_latinx` per state
+        - `avg_pct_asian`: Mean `pct_asian` per state
+        - `avg_pct_amerindian`: Mean `pct_amerindian` per state
+        - `avg_pct_nativehawaii`: Mean `pct_nativehawaii` per state
+        - `avg_pct_tworaces`: Mean `pct_tworaces` per state
+        - `avg_pct_unknownrace`: Mean `pct_unknownrace` per state
+        - `avg_pct_nonres`: Mean `pct_nonres` per state
+
+
+## Part III: Creating descriptive table using functions
+
+By the end of Part II, you should have created a descriptive table that looks something like this:
+
+| stabbr | avg_pct_white | avg_pct_black | avg_pct_latinx | ... | avg_pct_nonres |
+| :----: | :----: | :----: | :----: | :----: | :----: |
+| AK | 38.5 | 3.95 | 5.31 | ... | 0.57 |
+| AL | 46.4 | 40.0 | 5.70 | ... | 0.91 |
+| AR | 55.6 | 27.2 | 9.38 | ... | 1.17 |
+
+In this section, you will write functions to help accomplish the same task as before for creating this descriptive table.
+
+\textcolor{red}{\textbf{/2}}
+
+1. First, create the following helper function to read in CSV data and turn the column names to lowercase:
+
+    - **Function name**: `read_csv_to_df()`
+    - **Function argument**: `dir_name` & `file_name`
+    - **Function body**: 
+        - Read in the CSV data file from the specified `dir_name`. The data file would be your `file_name` input plus the `.csv` extension.
+        - Turn the column names of the dataframe to all lowercase
+        - **Returns**: The dataframe from above steps
+
+\textcolor{red}{\textbf{/1}}
+
+2. Now, call the `read_csv_to_df()` function to read in your `year_2` files:
+
+    - Save HD data to object called `hd_full_df2`
+    - Save EF data to object called `ef_full_df2`
+    
+    _Hint_: When you pass in the `file_name` argument to `read_csv_to_df()`, make sure not to include the `.csv` extension, as that should already be added inside the function from the previous step.
+
+\textcolor{red}{\textbf{/3}}
+
+3. Next, you will create a function for generating the descriptive table:
+
+    - **Function name**: `create_race_table()`
+    - **Function argument**: `dir_name` & `data_year`
+    - **Function body**: 
+        - Perform the same data manipulations you did in part II Q2 - Q6 to generate the final descriptive table
+        - You are going to modify part III Q2 so that you call the `read_csv_to_df()` function to read in the HD and EF datasets for the specified `data_year`. Recall from above, `read_csv_to_df()` takes two arguments-- dir_name and file_name. `dir_name` follows the same logic, but now we want to modify `file_name` so that we can read in a specified year (e.g. 2018). 
+        - **Returns**: The dataframe containing the descriptive statistics
+
+\textcolor{red}{\textbf{/1}}
+
+4. Finally, call the `create_race_table()` function to generate the descriptive table for your `year_2` data:
+
+    - Save the descriptive table to an object called `race_by_state2`
+
+
+## Part IV: Pipeable functions
+
+\textcolor{red}{\textbf{/1}}
+
+1. In this section, you will be building off the previous sections and getting more practice writing functions -- in particular, **pipeable functions** that you can chain together. First, create the following objects from `race_by_state` by using pipes and a `tidyverse` function:
+
+    - Create an object called `race_by_state_wb` that selects the following variables: `stabbr, avg_pct_white, avg_pct_black`
+    - Create an object called `race_by_state_wpoc` that selects the following variables: `stabbr, avg_pct_white, avg_pct_black, avg_pct_latinx, avg_pct_amerindian`
+
+\textcolor{red}{\textbf{/2}}
+
+2. Notice how the `tidyverse` function from the previous step is both pipeable and accepts an arbitrary number of arguments. In this step, you'll be writing a function like that too that kind of acts as a wrapper around the `tidyverse` function you used in the previous step:
+
+    - **Function name**: `select_race_vars()`
+    - **Function argument**: `df` & an arbirary number of race variables to select
+    - **Function body**: 
+        - Use the `tidyverse` function you used from the previous step to select `stabbr` and the arbitrary number race variables to select from `df`
+        - **Returns**: The subsetted dataframe
+
+\textcolor{red}{\textbf{/2}}
+
+3. You'll now call the `select_race_vars()` function to perform the same subsetting as Part IV, Q1 on `race_by_state2` in 2 ways:
+
+    - Create `race_by_state2_wb` without using pipes
+    - Create `race_by_state2_wpoc` using pipes
+
+    _Hint_: When you call `select_race_vars()`, you'll only need to pass in the race variables you want to select and not `stabbr` like in Part IV, Q1 because that is already taken care of inside the function from the previous step. Also, make sure not to surround the race variables in quotes when you pass them to your function.
+
+\textcolor{red}{\textbf{/1.5}}
+
+4. Continuing to build off the previous steps, you will now plot the race variables that you selected. Before we can plot the data, it must be pivoted to tidy format. Again, you will first be doing this outside a function.
+
+    Create a new object `race_by_state_pivot` where you pivot `race_by_state_wpoc` from wide to long such that:
+    
+    - There are 3 columns in the pivoted table called: `stabbr`, `race`, `percentage`
+    - The `stabbr` column should just be the same `stabbr` variable from the original `race_by_state_wpoc` table
+    - The `race` column should contain the race categories obtained from the column names of `race_by_state_wpoc`. Be sure to drop the `avg_pct_` prefix.
+    - The `percentage` column should contain the corresponding percentage for each race/ethnicity
+    
+    Your pivoted table should look something like this:
+    
+| stabbr | race | percentage |
+| :----: | :----: | :----: |
+| AK | white | 38.5 |
+| AK | black | 3.95 |
+| AK | latinx | 5.31 |
+| AK | amerindian | 27.3 |
+| AL | white | 46.4 |
+| AL | black | 40.0 |
+| AL | latinx | 5.70 |
+| AL | amerindian | 1.32 |
+
+\textcolor{red}{\textbf{/0.5}}
+
+5. Copy the code below to create and save your plot. Replace the `XXXX` in the plot file name with your `year_1` that you are plotting (e.g., `plot2019.png`).
+
+```r
+png(file.path(plots_dir, 'plotXXXX.png'))
+print(ggplot(race_by_state_pivot, aes(x=race, y=percentage, color=race)) +  
+  geom_jitter(width=0.2))
+dev.off()
+```
+
+\textcolor{red}{\textbf{/2}}
+
+6. Now, you will adapt your code from the previous steps to create the following function that can pivot the input dataframe and generate the plot:
+
+    - **Function name**: `plot_race_figure()`
+    - **Function argument**: `df`, `dir_name`, & `plot_name`
+    - **Function body**: 
+        - Pivot the input `df` into tidy format (_Hint_: Remember that the columns in `df` may vary depending on which race variables were selected, so your code should not be dependent on specific race variable names)
+        - Plot the pivoted dataframe and save the figure in a file called `plot_name` inside the specified `dir_name`
+        - **Returns**: The first argument `df` (so the function remains pipeable)
+
+\textcolor{red}{\textbf{/1}}
+
+7. Call your `plot_race_figure()` function to plot `race_by_state2_wpoc`. Save the plot in your `plots_dir` and call it `plotXXXX.png` where `XXXX` is your `year_2` (e.g., `plot2018.png`)
+
+\textcolor{red}{\textbf{/3}}
+
+8. Time to put it all together! In this final step, use pipes to chain together your `create_race_table()`, `select_race_vars()`, and `plot_race_figure()` functions. You can choose any year's data to use in `create_race_table()`, select any race variables in `select_race_vars()`, and name your plot anything you'd like in `plot_race_figure()`.
+
+    If you can, try to choose a year where one of your team members downloaded the data (i.e., not your own `year_1` and `year_2`). This means you and your group will need to push the EF data files you downloaded and pull the files other members downloaded.
+
+## Extra credit - ggplot
+
+\textcolor{red}{\textbf{/2}}
+
+For extra credit, create a visualization from the dataset that you used in this exercise. You can create the visualization with ggplot in the `.Rmd` markdown file or the `.R` script file, depending on the weekly problem set. 
+
+Use a `#comment` to let us know this is your extra credit plot. Don't forget to update your git repository!
+
+## Part V: Create a GitHub issue   
+
+This week, create a section in your ps8.R script with the url links to your github issue posts.
+
+- Go to the [class repository](https://github.com/anyone-can-cook/rclass2_student_issues_w23/issues) and create a new issue.
+- Please refer to [rclass2 student issues readme](https://github.com/anyone-can-cook/rclass2_student_issues_w23/blob/main/README.md) for instructions on how to post questions or things you've learned.
+- You can either:
+  - Ask a question that you have about this problem set or the course in general. Make sure to assign the instructors (@ozanj, @xochilthlopez, @joycehnguy, @augias) and mention your team (e.g., @anyone-can-cook/your_team_name).
+  - Share something you learned from this problem set or the course. Please mention your team (e.g., @anyone-can-cook/your_team_name).
+- You are also required to respond to at least one issue posted by another student.
+
+- Paste the url to your issue here: 
+- Paste the url to the issue you responded to here: 
+
+# Submit problem set  
+You will need to submit your `ps8_lastname_firstname.R`, all the unzipped data files in `data/` folder (you can choose to ignore zip files if you'd like), and all plots in `plots/` folder. You should commit these items on your `dev` branch as you work through this problem set. In the end, merge your `dev` branch into `main` and then push to the remote `main` branch to submit.
