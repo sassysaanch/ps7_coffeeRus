@@ -1,9 +1,9 @@
 ################################################################################
 ##
-## [ PROJ ] < Problem set # >
-## [ FILE ] < Name of this particular file >
-## [ AUTH ] < Your name / GitHub handle >
-## [ INIT ] < Date you started the file >
+## [ PROJ ] < Problem set #7 >
+## [ FILE ] < p7_Cousins_SarahJ >
+## [ AUTH ] < Sarah J. Cousins/SJC0usins >
+## [ INIT ] < Due 3/3/23 >
 ##
 ################################################################################
 
@@ -18,9 +18,9 @@ library(expss)
 ## ---------------------------
 plots_dir <- file.path('.', 'plots')
 data_dir <- file.path('.', 'data')
-csv_dir <- file.path('.',  'data', 'csv_data')
-dict_dir <- file.path('.',  'data', 'dictionaries')
-stata_dir <- file.path('.',  'data', 'stata_files')
+csv_dir <- file.path('.',  'data/csv_data')
+dict_dir <- file.path('.',  'data/dictionaries')
+stata_dir <- file.path('.',  'data/stata_files')
 
 
 ## -----------------------------------------------------------------------------
@@ -36,17 +36,17 @@ dir.exists(data_dir) #to check if data_dir exists
 
 #Q 1.6 
 if (dir.exists(data_dir)) {
-  writeLines(str_c("Already have directory: ", data_dir))
+  writeLines(str_c("Already have directory:", data_dir, sep=" "))
 } else if (dir.create(data_dir)){
-  writeLines(str_c("Creating new directory: ", data_dir))
+  writeLines(str_c("Creating new directory:", data_dir, sep=" "))
 }
 #OUTPUT: Already have directory: ./data
 
 #alternative - For some reason else only works if the dir.create occurs last.
 if (dir.exists(data_dir)) {
-  writeLines(str_c("Already have directory: ", data_dir))
+  writeLines(str_c("Already have directory:", data_dir,  sep=" "))
 } else{
-  writeLines(str_c("Creating new directory: ", data_dir))
+  writeLines(str_c("Creating new directory:", data_dir,  sep=" "))
   (dir.create(data_dir))
 }
 #OUTPUT: Already have directory: ./data
@@ -54,9 +54,9 @@ if (dir.exists(data_dir)) {
 #Q 1.7
 make_dir <- function(dir_name) {
   if (dir.exists(dir_name)) {
-    writeLines(str_c("Already have directory: ", dir_name))
+    writeLines(str_c("Already have directory:", dir_name, sep=" "))
   } else if (dir.create(dir_name)) {
-    writeLines(str_c("Creating new directory: ", dir_name))
+    writeLines(str_c("Creating new directory:", dir_name, sep=" "))
   }
 }
 
@@ -88,7 +88,7 @@ files <- c('hd2013', 'hd2008', 'hd2007')
 data_url <- str_c(url, files[1], suffixes[1],".zip")
 data_url
 
-data_zipfile <- file.path(file_dirs[1], str_c(files[1], suffixes[1], '.zip'))
+data_zipfile <- str_c(file_dirs[1], files[1], ".zip")
 data_zipfile
 file.exists(data_zipfile) 
 #[1] FALSE
@@ -98,10 +98,10 @@ file.exists(data_zipfile)
 
 #Q 2.3
 if(!file.exists(data_zipfile)) {
-  writeLines(str_c("Dowloading file: ", data_zipfile))
+  writeLines(str_c("Downloading file:", sep=" ", data_zipfile))
   download.file(url = data_url, destfile = data_zipfile)
 } else {
-  writeLines(str_c("Already have file: ", data_zipfile))
+  writeLines(str_c("Already have file:", sep=" ", data_zipfile))
 }
 
 #Q 2.4
@@ -147,7 +147,7 @@ download_file <- function(files, file_dirs, suffixes , extensions) {
 #Q 2.7
 #Downloading 2013 for all file types
 #2013 csv
-download_file(files[1],file_dirs[1], suffixes[1], extensions[1])
+download_file(file_name=files[1], directories=file_dirs[1], file_suffixes=suffixes[1], file_extension=extensions[1])
 #OUTPUT - Unzipping file: ./data/csv_datahd2013.csv
 #2013 xlsx
 download_file(files[1],file_dirs[2], suffixes[2], extensions[2])
@@ -157,21 +157,12 @@ download_file(files[1],file_dirs[2], suffixes[2], extensions[2])
 download_file(files[1], file_dirs[3], suffixes[3], extensions[3])
 #OUTPUT - Unzipping file: ./data/stata_fileshd2013.do
 
-#Q 2.8 Downlaoding+unzipping 2008, 2013, 2007 .xlsx, .do, and .CSV files.
-
-for (l in files) {
-  files_loop <- str_c(l)
-   for (o in file_dirs) {
-   dirs_loop <- str_c(o)
-     for (s in suffixes) {
-     suffix_loop <-  str_c(s)
-       for (t in extensions) {
-       extension_loop <- str_c(t)
-         download_file(files = files_loop, 
-                    file_dirs = dirs_loop, 
-                    suffixes = suffix_loop, 
-                    extensions = extension_loop)
-}}}}
+#Q 2.8 Downloading+unzipping 2008, 2013, 2007 .xlsx, .do, and .CSV files.
+ 
+for (i in 1:length(files)) {
+  for (j in 1:length(file_dirs)) {
+    download_file(files = files[i], file_dirs = file_dirs[j], suffixes = suffixes[j], extensions = extensions[j])
+  }}
 
 
 ## -----------------------------------------------------------------------------
@@ -257,7 +248,7 @@ git checkout -b dev_Cousins_SarahJ
 #confirming i'm on dev branch -- could also use git status
 git branch -a
 #adding while on my dev branch
-git add ps7_Cousins_SarahJ.R
+git add p7_Cousins_SarahJ.R
 git add plots/hd2013.png
 git add plots/hd2008.png
 git add plots/hd2007.png
@@ -268,7 +259,16 @@ git checkout main
 git pull
 git merge dev
 git push --set-upstream dev_Cousins_SarahJ main
-
+#sending up revised r script which was missing my name while on main branch
+git pull
+git add p7_Cousins_SarahJ.R
+git commit -m "r script copy edits"
+git push
+#sending up data files
+git add data/csv_data
+git add data/dictionaries
+git add data/data_files
+git commit -m "sending data files"
 
 ## -----------------------------------------------------------------------------
 ## END SCRIPT
