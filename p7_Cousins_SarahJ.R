@@ -2,7 +2,7 @@
 ##
 ## [ PROJ ] < Problem set #7 >
 ## [ FILE ] < p7_Cousins_SarahJ >
-## [ AUTH ] < Sarah J. Cousins/SJC0usions >
+## [ AUTH ] < Sarah J. Cousins/SJC0usins >
 ## [ INIT ] < Due 3/3/23 >
 ##
 ################################################################################
