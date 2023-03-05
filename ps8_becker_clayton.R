@@ -160,48 +160,6 @@ ef_full_df2 <- read_csv_to_df(dir_name = csv_dir, file_name = "ef2018a_rv")
 # Question 3
 
 create_race_table <- function(dir_name, data_year) {
-  read_csv_to_df <- function(dir_name, file_name) {
-    year_2_full_df <- read_csv(file = file.path(str_c(dir_name, file_name, ".csv")))
-    names(year_2_full_df) <- tolower(names(year_2_full_df))
-    year_2_full_df}
-  hd_full_df2 <- read_csv_to_df(dir_name = csv_dir, file_name = str_c("hd", data_year))
-  ef_full_df2 <- read_csv_to_df(dir_name = csv_dir, file_name = str_c("ef", data_year, "a_rv"))
-  hd_df2 <- hd_full_df2 %>% select(unitid, stabbr)
-  ef_df2 <- ef_full_df2 %>% filter(line == 1) %>% 
-    select(unitid, eftotlt, efwhitt, efbkaat, efhispt, 
-           efasiat, efaiant, efnhpit, 
-           ef2mort, efunknt, efnralt)
-  ef_df2 <- ef_df2 %>% mutate(
-    pct_white = efwhitt/eftotlt,
-    pct_black = efbkaat/eftotlt,
-    pct_latinx = efhispt/eftotlt,
-    pct_asian = efasiat/eftotlt,
-    pct_amerindian = efaiant/eftotlt,
-    pct_nativehawaii = efnhpit/eftotlt,
-    pct_tworaces = ef2mort/eftotlt,
-    pct_unknownrace = efunknt/eftotlt,
-    pct_nonres = efnralt/eftotlt
-  ) %>% select(unitid, pct_white, pct_black, pct_latinx, 
-               pct_asian, pct_amerindian, pct_nativehawaii,
-               pct_tworaces, pct_unknownrace, pct_nonres)
-  merged_df2 <- inner_join(hd_df2, ef_df2, by = "unitid") %>% select(-unitid)
-  race_by_state2 <- merged_df2 %>% group_by(stabbr) %>% 
-    arrange(stabbr) %>% 
-    mutate(
-      avg_pct_white = mean(pct_white, na.rm = T),
-      avg_pct_black = mean(pct_black, na.rm = T),
-      avg_pct_latinx = mean(pct_latinx, na.rm = T),
-      avg_pct_asian = mean(pct_asian, na.rm = T),
-      avg_pct_amerindian = mean(pct_amerindian, na.rm = T),
-      avg_pct_nativehawaii = mean(pct_nativehawaii, na.rm = T), 
-      avg_tworaces = mean(pct_tworaces, na.rm = T), 
-      avg_unknownrace = mean(pct_unknownrace, na.rm = T),
-      avg_pct_nonres = mean(pct_nonres, na.rm = T)
-    ) %>% filter(row_number() == 1) %>% select(1,11:19)
-  race_by_state2
-}
-
-create_race_table <- function(dir_name, data_year) {
   hd <- read_csv_to_df(dir_name, file_name = str_c("hd", data_year)) %>% 
     select(unitid, stabbr)
   ef <- read_csv_to_df(dir_name, file_name = str_c("ef", data_year, "a_rv")) %>% filter(line ==1) %>% 
@@ -303,14 +261,9 @@ plot_race_figure(df = race_by_state2_wpoc, dir_name = plots_dir, plot_name = "pl
 
 # Question 8
 
-8. Time to put it all together! In this final step, use pipes to chain together your `create_race_table()`, 
-`select_race_vars()`, and `plot_race_figure()` functions. 
-You can choose any year's data to use in `create_race_table()`, select any race variables in 
-`select_race_vars()`, and name your plot anything you'd like in `plot_race_figure()`.
-
-If you can, try to choose a year where one of your team members downloaded the data 
-(i.e., not your own `year_1` and `year_2`). This means you and your group will need to push the 
-EF data files you downloaded and pull the files other members downloaded.
+create_race_table(dir_name = csv_dir, data_year = 2015) %>% 
+  select_race_vars(avg_pct_white:avg_pct_nativehawaii) %>% 
+  plot_race_figure(dir_name = plots_dir, plot_name = "plot2015.png")
 
 ## -----------------------------------------------------------------------------
 ## END SCRIPT
