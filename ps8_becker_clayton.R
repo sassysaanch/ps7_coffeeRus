@@ -202,12 +202,9 @@ create_race_table <- function(dir_name, data_year) {
 }
 
 create_race_table <- function(dir_name, data_year) {
-  hd <- read_csv(file = file.path(str_c(dir_name, str_c("hd", data_year, ".csv")))) %>% 
-    select(UNITID, STABBR)
-  names(hd) <- tolower(names(hd))
-  ef <- read_csv_to_df(dir_name, file_name = str_c("ef", data_year, "a_rv"))
-  names(ef) <- tolower(names(ef))
-  ef <- ef %>% filter(line ==1) %>% 
+  hd <- read_csv_to_df(dir_name, file_name = str_c("hd", data_year)) %>% 
+    select(unitid, stabbr)
+  ef <- read_csv_to_df(dir_name, file_name = str_c("ef", data_year, "a_rv")) %>% filter(line ==1) %>% 
     select(unitid, eftotlt, efwhitt, efbkaat, efhispt,
            efasiat, efaiant, efnhpit,
            ef2mort, efunknt, efnralt)
@@ -252,6 +249,68 @@ head(race_by_state2)
 ## -----------------------------------------------------------------------------
 ## Part 4 - Label each question using comments
 ## -----------------------------------------------------------------------------
+
+# Question 1
+
+race_by_state_wb <- race_by_state %>% select(stabbr, avg_pct_white, avg_pct_black)
+race_by_state_wpoc <- race_by_state %>% select(stabbr, avg_pct_white, avg_pct_black, 
+                                               avg_pct_latinx, avg_pct_amerindian)
+
+# Question 2 
+
+select_race_vars <- function(df, ...) {
+  subset_df <- df %>% select(stabbr, ...)
+  subset_df
+}
+
+# Question 3
+
+race_by_state2_wb <- select_race_vars(race_by_state2, avg_pct_white, avg_pct_black)
+race_by_state2_wpoc <- race_by_state2 %>% select_race_vars(avg_pct_white, avg_pct_black, 
+                                                           avg_pct_latinx, avg_pct_amerindian)
+
+# Question 4
+
+race_by_state_pivot <- race_by_state_wpoc %>% pivot_longer(cols = starts_with("avg_pct"), 
+                                                           names_to = "race",
+                                                           names_prefix = "avg_pct_",
+                                                           values_to = "percentage")
+
+# Question 5
+
+png(file.path(plots_dir, 'plot2019.png'))
+print(ggplot(race_by_state_pivot, aes(x=race, y=percentage, color=race)) +  
+        geom_jitter(width=0.2))
+dev.off()
+
+# Question 6
+
+plot_race_figure <- function(df, dir_name, plot_name) {
+  df <- df %>% pivot_longer(cols = starts_with("avg_pct"), 
+                            names_to = "race",
+                            names_prefix = "avg_pct_",
+                            values_to = "percentage")
+  png(file.path(dir_name, plot_name))
+  print(ggplot(df, aes(x=race, y=percentage, color=race)) +  
+          geom_jitter(width=0.2))
+  dev.off()
+  df
+}
+
+# Question 7
+
+plot_race_figure(df = race_by_state2_wpoc, dir_name = plots_dir, plot_name = "plot2018.png")
+
+# Question 8
+
+8. Time to put it all together! In this final step, use pipes to chain together your `create_race_table()`, 
+`select_race_vars()`, and `plot_race_figure()` functions. 
+You can choose any year's data to use in `create_race_table()`, select any race variables in 
+`select_race_vars()`, and name your plot anything you'd like in `plot_race_figure()`.
+
+If you can, try to choose a year where one of your team members downloaded the data 
+(i.e., not your own `year_1` and `year_2`). This means you and your group will need to push the 
+EF data files you downloaded and pull the files other members downloaded.
 
 ## -----------------------------------------------------------------------------
 ## END SCRIPT
