@@ -201,12 +201,57 @@ create_race_table <- function(dir_name, data_year) {
   race_by_state2
 }
 
+create_race_table <- function(dir_name, data_year) {
+  hd <- read_csv(file = file.path(str_c(dir_name, str_c("hd", data_year, ".csv")))) %>% 
+    select(UNITID, STABBR)
+  names(hd) <- tolower(names(hd))
+  ef <- read_csv_to_df(dir_name, file_name = str_c("ef", data_year, "a_rv"))
+  names(ef) <- tolower(names(ef))
+  ef <- ef %>% filter(line ==1) %>% 
+    select(unitid, eftotlt, efwhitt, efbkaat, efhispt,
+           efasiat, efaiant, efnhpit,
+           ef2mort, efunknt, efnralt)
+  ef <- ef %>% mutate(
+    pct_white = efwhitt/eftotlt,
+    pct_black = efbkaat/eftotlt,
+    pct_latinx = efhispt/eftotlt,
+    pct_asian = efasiat/eftotlt,
+    pct_amerindian = efaiant/eftotlt,
+    pct_nativehawaii = efnhpit/eftotlt,
+    pct_tworaces = ef2mort/eftotlt,
+    pct_unknownrace = efunknt/eftotlt,
+    pct_nonres = efnralt/eftotlt
+  ) %>% select(unitid, pct_white, pct_black, pct_latinx, 
+               pct_asian, pct_amerindian, pct_nativehawaii,
+               pct_tworaces, pct_unknownrace, pct_nonres)
+  merged_df2 <- inner_join(hd, ef, by = "unitid") %>% select(-unitid)
+  race_by_state2 <- merged_df2 %>% group_by(stabbr) %>% 
+    arrange(stabbr) %>% 
+    mutate(
+      avg_pct_white = mean(pct_white, na.rm = T),
+      avg_pct_black = mean(pct_black, na.rm = T),
+      avg_pct_latinx = mean(pct_latinx, na.rm = T),
+      avg_pct_asian = mean(pct_asian, na.rm = T),
+      avg_pct_amerindian = mean(pct_amerindian, na.rm = T),
+      avg_pct_nativehawaii = mean(pct_nativehawaii, na.rm = T), 
+      avg_tworaces = mean(pct_tworaces, na.rm = T), 
+      avg_unknownrace = mean(pct_unknownrace, na.rm = T),
+      avg_pct_nonres = mean(pct_nonres, na.rm = T)
+    ) %>% filter(row_number() == 1) %>% select(1,11:19)
+  race_by_state2
+}
+
 # Question 4
 
 race_by_state2 <- create_race_table(dir_name = csv_dir, data_year = 2018)
 
 head(race_by_state)
 head(race_by_state2)
+
+
+## -----------------------------------------------------------------------------
+## Part 4 - Label each question using comments
+## -----------------------------------------------------------------------------
 
 ## -----------------------------------------------------------------------------
 ## END SCRIPT
