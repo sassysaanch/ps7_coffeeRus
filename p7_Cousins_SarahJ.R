@@ -18,9 +18,9 @@ library(expss)
 ## ---------------------------
 plots_dir <- file.path('.', 'plots')
 data_dir <- file.path('.', 'data')
-csv_dir <- file.path('.',  'data/csv_data')
-dict_dir <- file.path('.',  'data/dictionaries')
-stata_dir <- file.path('.',  'data/stata_files')
+csv_dir <- file.path(data_dir, 'csv_data')
+dict_dir <- file.path(data_dir,'dictionaries')
+stata_dir <- file.path(data_dir, 'stata_files')
 
 
 ## -----------------------------------------------------------------------------
@@ -36,9 +36,9 @@ dir.exists(data_dir) #to check if data_dir exists
 
 #Q 1.6 
 if (dir.exists(data_dir)) {
-  writeLines(str_c("Already have directory:", data_dir, sep=" "))
+  writeLines(str_c("Already have directory: ", data_dir))
 } else if (dir.create(data_dir)){
-  writeLines(str_c("Creating new directory:", data_dir, sep=" "))
+  writeLines(str_c("Creating new directory: ", data_dir))
 }
 #OUTPUT: Already have directory: ./data
 
@@ -54,17 +54,20 @@ if (dir.exists(data_dir)) {
 #Q 1.7
 make_dir <- function(dir_name) {
   if (dir.exists(dir_name)) {
-    writeLines(str_c("Already have directory:", dir_name, sep=" "))
+    writeLines(str_c("Already have directory: ", dir_name))
   } else if (dir.create(dir_name)) {
-    writeLines(str_c("Creating new directory:", dir_name, sep=" "))
+    writeLines(str_c("Creating new directory: ", dir_name))
   }
 }
 
 #Q 1.8 - Call your make_dir() function with all the directory path objects you created earlier (i.e., data_dir, plots_dir, csv_dir, dict_dir, stata_dir). This should create all the remaining directories.
-directories <- c(data_dir, plots_dir, csv_dir, dict_dir, stata_dir) 
-for (i in directories) {
-  make_dir(i)
-}
+make_dir(data_dir)
+make_dir(plots_dir)
+
+make_dir(csv_dir)
+make_dir(dict_dir)
+make_dir(stata_dir)
+
 #OUTPUT - Already have directory: ./data
 #OUTPUT -Creating new directory: ./plots
 #OUTPUT -Creating new directory: ./data/csv_data
@@ -128,17 +131,17 @@ if(!file.exists(data_zipfile)) {
 
 #Q 2.6
 
-download_file <- function(files, file_dirs, suffixes , extensions) {
-  data_url <- str_c(url, files, suffixes,".zip")
-  data_zipfile <- str_c(file_dirs, files, ".zip")
-  data_unzipped <- str_c(file_dirs, files, extensions)
+download_file <- function(dir_name, file_name, file_suffix, file_extension){
+  data_url <- str_c(url, file_name, file_suffix,".zip")
+  data_zipfile <- str_c(dir_name, str_c(file_name, file_suffix, ".zip"))
+  data_unzipped <- str_c(dir_name, str_c(file_name, file_extension))
   if(!file.exists(data_zipfile)) {
     writeLines(str_c("Dowloading file: ", data_zipfile, " & Unzipping file: ", data_unzipped))
     download.file(url = data_url, destfile = data_zipfile)
-    unzip(data_zipfile, exdir = file_dirs)
+    unzip(data_zipfile, exdir = dir_name)
   } else if (!file.exists(data_unzipped)) {
     writeLines(str_c("Unzipping file: ", data_unzipped))
-    unzip(data_zipfile, exdir = file_dirs)
+    unzip(data_zipfile, exdir = dir_name)
   } else {
     writeLines(str_c("Already have files: ", data_zipfile, " ", data_unzipped))
   }
@@ -147,7 +150,7 @@ download_file <- function(files, file_dirs, suffixes , extensions) {
 #Q 2.7
 #Downloading 2013 for all file types
 #2013 csv
-download_file(file_name=files[1], directories=file_dirs[1], file_suffixes=suffixes[1], file_extension=extensions[1])
+download_file(file_name=files[1], dir_name=file_dirs[1], file_suffix=suffixes[1], file_extension=extensions[1])
 #OUTPUT - Unzipping file: ./data/csv_datahd2013.csv
 #2013 xlsx
 download_file(files[1],file_dirs[2], suffixes[2], extensions[2])
@@ -161,7 +164,7 @@ download_file(files[1], file_dirs[3], suffixes[3], extensions[3])
  
 for (i in 1:length(files)) {
   for (j in 1:length(file_dirs)) {
-    download_file(files = files[i], file_dirs = file_dirs[j], suffixes = suffixes[j], extensions = extensions[j])
+    download_file(dir_name = file_dirs[j], file_name = files[i], file_suffix = suffixes[j],  extensions[j])
   }}
 
 
@@ -267,8 +270,13 @@ git push
 #sending up data files
 git add data/csv_data
 git add data/dictionaries
-git add data/data_files
-git commit -m "sending data files"
+git add data/stata_files
+git commit -m "adding data files"
+git checkout main
+git pull
+git merge
+git push
+
 
 ## -----------------------------------------------------------------------------
 ## END SCRIPT
