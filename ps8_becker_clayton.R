@@ -266,5 +266,17 @@ create_race_table(dir_name = csv_dir, data_year = 2015) %>%
   plot_race_figure(dir_name = plots_dir, plot_name = "plot2015.png")
 
 ## -----------------------------------------------------------------------------
+## Bonus Plot
+## -----------------------------------------------------------------------------
+
+png(file.path(plots_dir, 'becker_bonus_plot_ps8.png'))
+ggplot(race_by_state2, aes(x = avg_pct_white, y = stabbr)) +
+  geom_point() + 
+  ggtitle("Average Share of White University Students by State") +
+  xlab("Average Percent White") + ylab("State") +
+  theme_minimal()
+dev.off()
+
+## -----------------------------------------------------------------------------
 ## END SCRIPT
 ## -----------------------------------------------------------------------------
