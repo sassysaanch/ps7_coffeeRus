@@ -373,10 +373,10 @@ git add data/csv_data/ef2013a.csv
 git add data/csv_data/hd2012.csv
 git add data/dictionaries/ef2013a.xlsx
 git add data/dictionaries/hd2013a.xlsx
-git add data/plots/ps8_bonusplot_CousinsSarahJ.png
-git add data/plots/plot2018_q4_8sjc.png
-git add data/plots/plot2012.png
-git add data/plots/plot2013.png
+git add plots/ps8_bonusplot_CousinsSarahJ.png
+git add plots/plot2018_q4_8sjc.png
+git add plots/plot2012.png
+git add plots/plot2013.png
 git commit -m "inital commit and merge"
 #switch to main, pull, merge and push
 git checkout main
