@@ -31,7 +31,7 @@ stata_dir <- file.path("./data/stata_files")
 ## -----------------------------------------------------------------------------
 ## Part 1 - Label each question using comments
 ## -----------------------------------------------------------------------------
-# check if directory exists
+# Q5 check if directory exists
 dir.exists(data_dir)
 
 dir.create(data_dir)
@@ -44,7 +44,7 @@ dir.exists(data_dir)
 # • Else, print out Creating new directory:, followed by the name of data_dir. Also use
 # dir.create() to create the data_dir
 
-# create an if else loop 
+#Q7 create an if else loop 
 
 if (dir.exists(data_dir)) {
   writeLines("Already have directory: data_dir")
@@ -64,7 +64,7 @@ make_dir <- function(dir_name) {
 }
 
  
-# let's call this new function
+#Q8 let's call this new function
 make_dir(dict_dir)
 make_dir(csv_dir)
 make_dir(plots_dir)
@@ -75,6 +75,7 @@ make_dir(stata_dir)
 ## Part 2 - Label each question using comments
 ## -----------------------------------------------------------------------------
 
+# Q1
 url <- 'https://nces.ed.gov/ipeds/datacenter/data/'
 file_dirs <- c(csv_dir, dict_dir, stata_dir)
 suffixes <- c('', '_Dict', '_Stata')
@@ -83,6 +84,7 @@ extensions <- c('.csv', '.xlsx', '.do')
 # Group member 2
 files <- c('hd2016', 'hd2015', 'hd2014')
 
+# Q2
 # Create data_url object
 data_url <- for (i in files){
   print(i)
@@ -104,7 +106,7 @@ data_url <- for (i in files){
 
 file.exists(data_zipfile)
 
-# create an if else block to download files
+# Q3. create an if else block to download files
 
 if(file.exists(data_zipfile) == FALSE){
   download.file(data_url, destfile = data_zipfile)
@@ -113,7 +115,7 @@ if(file.exists(data_zipfile) == FALSE){
   writeLines(str_c("Already have file: ", data_zipfile))
 }
 
-# Let's unzip the files
+# Q4. Let's unzip the files
 
 for (i in file_dirs) {
   for (j in files) {
@@ -131,7 +133,7 @@ for (i in file_dirs) {
 
 file.exists(data_unzipped) # none of the files exist yet and the next time it does
 
-# create an if else block for these zip files now
+# Q5. create an if else block for these zip files now
 
 if(file.exists(data_zipfile) == FALSE || file.exists(data_unzipped) == FALSE){
   download.file(data_url, destfile = data_zipfile)
@@ -142,7 +144,7 @@ if(file.exists(data_zipfile) == FALSE || file.exists(data_unzipped) == FALSE){
   writeLines(str_c("Already have file: ", data_zipfile, data_unzipped))
 }
 
-# creating a function
+# Q6. creating a function
 download_file <- function(dir_name, file_name, file_suffix, file_extension) {
 # function body
 data_url <- str_c(url, file_name, file_suffix, ".zip")
